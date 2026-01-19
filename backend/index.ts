@@ -14,6 +14,11 @@ interface Product {
   valor: number;
 }
 
+interface CartItems {
+  id: number;
+  quantity: number;
+}
+
 const products: Product[] = [
   {
     id: 1,
@@ -41,6 +46,8 @@ const products: Product[] = [
   },
 ];
 
+let productsOnCart: CartItems[] = []
+
 app.get("/products", (request, reply) => {
   return reply.send(products);
 });
@@ -51,7 +58,24 @@ app.post<{ Body: Product }>("/products", (request, reply) => {
   reply.status(201).send();
 });
 
+app.get('/cart', (request, reply) => {
+  return reply.send(productsOnCart)
+})
 
+app.post<{ Body: CartItems }>("/cart", (request, reply) => {
+  const { id, quantity } = request.body;
+
+  let findProduct = productsOnCart.find(produto => produto.id == id)
+
+  if (findProduct) {
+    findProduct.quantity += quantity
+  } else {
+    productsOnCart.push({ id, quantity })
+
+  }
+
+  reply.status(201).send()
+})
 
 
 app.listen({

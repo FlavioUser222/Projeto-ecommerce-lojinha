@@ -1,38 +1,29 @@
-import { useState } from "react";
-import type { CartItem, Product } from "../types/product";
+import type { Product } from "../types/product";
 import { Header } from "./header";
 import { ShoppingBag } from "lucide-react";
 import { Card } from "./cardComponent";
 import { useProducts } from "../hooks/useProducts";
+import axios from "axios";
+
 
 export function Home() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const products: Product[] = useProducts();
-  const dataCart = JSON.parse(localStorage.getItem("cart-items") || "");
 
-  function addProduct(product: Product) {
-    const newCart = [...cartItems];
-    const findDuplicates = newCart.find((item) => item.id === product.id);
-
-    if (findDuplicates) {
-      findDuplicates.quantity += 1;
-    } else {
-      newCart.push({ ...product, quantity: 1 });
+  async function addProduct(id: number) {
+    try {
+      let quantity = 1
+      let res = await axios.post('http://localhost:3000/cart', { id, quantity })
+    } catch (error) {
+      alert(error)
     }
-    setCartItems(newCart);
-    localStorage.setItem("cart-items", JSON.stringify(newCart));
   }
-  const totalIems = dataCart?.reduce(
-    (acc: number, item: CartItem) => acc + item.quantity,
-    0
-  );
 
   return (
     <>
       <Header
         titulo="Loja Roupas"
         cardLogo={ShoppingBag}
-        cardLength={totalIems}
+        cardLength={1}
       ></Header>
 
       <div className="container">
@@ -44,7 +35,7 @@ export function Home() {
               nome={product.nome}
               valor={product.valor}
               onAdd={() => {
-                addProduct(product);
+                addProduct(product.id);
               }}
             />
           ))}

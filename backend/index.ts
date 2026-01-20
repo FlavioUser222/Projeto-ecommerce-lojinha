@@ -68,13 +68,14 @@ app.post<{ Body: CartItems }>("/cart", (request, reply) => {
   let findProduct = productsOnCart.find(produto => produto.id == id)
 
   if (findProduct) {
+    console.log(findProduct)
     findProduct.quantity += quantity
+
   } else {
     productsOnCart.push({ id, quantity })
-
   }
 
-  reply.status(201).send()
+  reply.status(201).send({ id, quantity })
 })
 
 
